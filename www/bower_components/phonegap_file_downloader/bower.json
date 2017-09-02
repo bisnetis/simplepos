@@ -1,0 +1,19 @@
+{
+  "name": "phonegap_file_downloader",
+  "version": "0.1.10",
+  "authors": [
+    "Jeanie Chung <jeanie.chung@gmail.com>"
+  ],
+  "description": "JavaScript library that utilizes Cordova plugins to download/retrieve files from a remote server for use in a PhoneGap app.",
+  "main": "file-downloader.js",
+  "homepage": "https://github.com/cbitstech/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tests",
+    "cordova.js",
+    "FileTransfer.js"
+
+  ]
+}
