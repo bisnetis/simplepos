@@ -1,9 +1,0 @@
-{
-  "name": "simplepos3",
-  "dependencies": {
-    "bootstrap": "3.3.7",
-    "taffydb": "*",
-    "phonegap_file_downloader": "cordova-file-downloader#0.1.10",
-    "toastr": "2.1.3"
-  }
-}
