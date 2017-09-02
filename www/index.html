@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<!--HTML5 doctype-->
+<html>
+
+<head>
+
+    <title>SimplePOS</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="stylesheet" type="text/css" href="lib/appframework/icons.css" />
+    <link rel="stylesheet" type="text/css" href="lib/appframework/af.ui.css" />
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bower_components/toastr/toastr.css" />
+    <link rel="stylesheet" type="text/css" href="lib/general.css" />
+        
+    <script type="text/javascript" charset="utf-8" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/taffydb/taffy-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/fastclick.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/appframework/appframework.ui.min.js"></script>
+    <script src='cordova.js'></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/toastr/toastr.min.js"></script>
+    <!--<script src='bower_components/phonegap_file_downloader/file-downloader.js'></script>-->
+    <script src='lib/database.module.js'></script>
+    <script src='lib/sales.module.js'></script>
+    <script src='lib/product.module.js'></script>
+    <script src='lib/file.module.js'></script>
+    <script src='lib/quote.module.js'></script>
+    <script src='lib/day.module.js'></script>
+    <script src='lib/report.module.js'></script>
+    <script src='lib/general.module.js'></script>
+    
+
+</head>
+
+<body>
+
+    <div id="splashscreen" class='ui-loader heavy'>
+        SimplePOS
+        <br>
+        <br>
+        <span class='ui-icon ui-icon-loading spin'></span>
+        <h1>Starting app</h1>
+    </div>
+
+    <div class="view">
+        <header>
+			<div id="network_status_container" class="text-right">
+				<span class="glyphicon glyphicon-alert" id="network_status"></span>
+			</div>
+            <h1>simplePOS</h1>
+        </header>
+
+        <div class="pages">
+
+            <!--Tab View Pages-->
+            <div class="panel ttab1" data-title="SimplePOS" id="tab1">
+                <div id="sales_view">
+                </div>
+                <div id="console" style="font-size: 11px;"></div>
+            </div>
+
+            <div class="panel" data-title="Reports" id="tab2" >
+                <div class="container-fluid" id="day_manage_container">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6"  id="start_day_container">
+                            <div class="input-group">
+                                <span class="input-group-addon bg-success">Opening Float</span>
+                                <input type="number" class="form-control day-open" placeholder="Enter the cash float amount in the till" id="day_opening_balance">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default day-open" type="button" onclick="daybot.start();">Start Day</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6" id="close_day_container">
+                            <div class="input-group">
+                                <span class="input-group-addon">Closing Amount</span>
+                                <input type="number" class="form-control day-close" placeholder="Enter the cash amount in the till" id="day_closing_balance">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default day-close" type="button" onclick="daybot.close();">End Day</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid" id="main_reports_container">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default" onclick="reportbot.loadDaily();">Daily Report</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12" id="report_display">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" data-title="Settings" id="tab3">
+                <div class="form-group adminpin" style="margin-top: 15px;">
+                    <label>Admin PIN:</label>
+                    <div class="input-group">
+						<input type="password" class="form-control" id="adminpin" >
+						<span class="input-group-btn">
+							<button class="btn btn-default" onClick="databasebot.validatepin();" type="button">Validate</button>
+						</span>
+					</div>
+                </div>
+				<div class="form-group admin" style="margin-top: 15px;">
+                    <label>User ID:</label>
+                    <input type="text" id="userid" class="form-control">
+                </div>
+                <div class="form-group admin">
+                    <label>Password:</label>
+                    <input type="text" id="password" class="form-control">
+                </div>
+                <div class="form-group admin">
+					<label>Payment Methods:</label>
+					<label class="checkbox-inline" style="width:auto">
+						<input type="checkbox" value="cash" id="payment_method_cash"> Cash
+					</label>
+					<label class="checkbox-inline" style="width:auto">
+						<input type="checkbox" value="eft" id="payment_method_eft"> EFT
+					</label>
+					<label class="checkbox-inline" style="width:auto">
+						<input type="checkbox" value="credit card" id="payment_method_credit_card"> Credit Card
+					</label>
+				</div>
+				<div class="clearfix"></div>
+                <div class="form-group admin">
+					<label>Default Payment Method:</label>
+					<select class="form-control" id="default_payment_method" style="width:auto">
+						<option value="cash">Cash</option>
+						<option value="eft">EFT</option>
+						<option value="credit card">Credit Card</option>
+					</select>
+				</div>
+				<div class="clearfix"></div>
+				<div class="form-group admin adminpin">
+					<label>Work Offline:</label>
+					<label class="checkbox-inline" style="width:auto">
+						<input type="checkbox" value="offline" id="mode_offline" onChange="databasebot.saveOfflineMode();">
+					</label>
+				</div>
+				<div class="clearfix"></div>
+				<div class="form-group admin adminpin">
+					<label>Debug:</label>
+					<label class="checkbox-inline" style="width:auto">
+						<input type="checkbox" value="debug" id="mode_debug">
+					</label>
+				</div>
+				<div class="clearfix"></div>
+				<div class="form-group admin adminpin hide debug_txt">
+					<label>Debug Console:</label>
+					<textarea class="form-control" style="width: 100%; height: 100px;" id="mode_debug_txt"></textarea>
+				</div>
+				<div class="clearfix"></div>
+                <div class="text-center admin" style="margin-top: 15px;">
+                    <button onclick='databasebot.saveUserSettings();' class="btn btn-success btn-lg">Save</button>
+                    <!--<button onclick='databasebot.saveUserSettings(1);' class="btn btn-default btn-lg admin">Connect</button>-->
+                </div>
+            </div>
+            
+            <div class="panel" data-title="SimplePOS" id="tab4">
+                <div id="tab_view">
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <a href="#tab1" class="icon home footbtn" onclick="salesbot.new(); $.afui.clearHistory()" id="sales_tab_button">SALES</a>
+			<a href="#tab4" class="icon basket footbtn" onclick="salesbot.list(); $.afui.clearHistory()" id="tabs_tab_button">TABS</a>
+            <a href="#tab2" class="icon heart footbtn" onclick="$.afui.clearHistory()" id="reports_tab_button">REPORTS</a>
+            <a href="#tab3" class="icon user footbtn" onclick="$.afui.clearHistory()" id="settings_tab_button">SETTINGS</a>
+        </footer>
+        
+        <div class="modal fade" id="small_modal">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content" id="small_modal_content">
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="medium_modal">
+            <div class="modal-dialog">
+                <div class="modal-content" id="medium_modal_content">
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="large_modal">
+            <div class="modal-dialog modal-lg" style="margin: 0;width: 100%;">
+                <div class="modal-content" id="large_modal_content" style="width: 100%; margin: 0; height: 100vh; background-color: #aaa; border-radius: 0;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="hide" id="pos_screen">
+            <div class="container-fluid no-gutter Override" style="color: #333 !important;">
+                <div class="row fill">
+					<div class="wrapper">
+						<div class="col-xs-4 white sales-left-column">
+							<div id="sales_menu" class="text-center" style="margin-bottom: 15px;">
+								<img class="pos-user-logo">
+								<!--<div class="btn-group btn-group-lg" role="group">
+									<button class="btn btn-default" onclick="salesbot.new();" id="btn_new_sale" style="width: 130px;">Sales</button>
+									<button class="btn btn-default" onclick="salesbot.list();" id="btn_list_sale" style="width: 130px;">Open Tabs</button>
+								</div>-->
+								<!--<button class="btn btn-default" onclick="generalbot.showSplash('Directories', generalbot.listDirectories(), 'medium');">List Directories</button>
+								<button class="btn btn-default" onclick="databasebot.storeLocalProductImages();">List Local Product Images</button>
+								<button class="btn btn-default" onclick="databasebot.processQuoteQueue();">Process Sales (sync)</button>
+								<button class="btn btn-default" onclick="databasebot.processClosedQuoteQueue();">Process Closed Sales (sync)</button>-->
+								<div class="btn-group btn-group-lg">
+									<!--<button class="btn btn-default btn-lg" onclick="salesbot.clear();">Clear</button>-->
+									<button class="btn btn-success btn-lg pull-right big-btn" onclick="salesbot.pay();">Pay: R <span class="fix-id big-btn" data-id="pos_pay_amount">0.00</span></button>
+								</div>
+							</div>
+							<div class="pos-table fix-id" data-id="pos_summary_table">
+								<div class="fix-id" data-id="tab-details"></div>
+								<div class="container-fluid fix-id" data-id="pos_table">
+									
+									<div class="row pos-header">
+										<div class="col-xs-7">Product</div>
+										<!--<div class="col-xs-1">Qty</div>-->
+										<div class="col-xs-3">Price</div>
+										<!--<div class="col-xs-1">Disc %</div>-->
+										<!--<div class="col-xs-2">Total</div>-->
+										<div class="col-xs-2"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-8 grey">
+							<div class="container-fluid no-gutter" style="background-color: #818181; padding: 15px;">
+								<div class="row">
+									<div class="col-xs-12 fix-id" data-id="product_tab_container"></div>
+								</div>
+								<div class="row">
+									<div class="col-xs-12">
+										<div class="container-fluid no-gutter">
+											<div class="row fix-id" data-id="products_container"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hide" id="pay_screen">
+            <div class="modal-header" style="background-color: #555; color: #fff;">
+                <h4 class="modal-title">Process Payment <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i></button></h4>
+            </div>
+            <div class="modal-body" style="background-color: #aaa;">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <div class="container-fluid no-gutter">
+                                <div class="row m-b-20">
+                                    <div class="col-xs-6 big-txt"><b>Amount</b></div>
+                                    <div class="col-xs-6 big-txt"><b>R</b> <span class="fix-id" data-id="pay_due"></span></div>
+                                </div>
+                                <div class="row m-b-20">
+                                    <div class="col-xs-6 big-txt"><b>Paid</b></div>
+                                    <div class="col-xs-6 big-txt">
+                                        <input type="number" pattern="\d+(\.\d{2})?" class="form-control fix-id big-txt-blk" data-id="pay_amount" style="background: #fff; ">
+                                    </div>
+                                </div>
+                                <div class="row m-b-20">
+                                    <div class="col-xs-6 big-txt"><b>Change</b></div>
+                                    <div class="col-xs-6 big-txt-red"><b>R <span class="fix-id big-txt-red" data-id="pay_change" ></span></b></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-5">
+                            <div data-id="quick_pay_container" class="fix-id quick-pay">
+                                <div class="container-fluid"><div class="row"></div></div>
+                            </div>
+							<div class="col-xs-12">
+								<button class="btn btn-success fix-id quote-save-btn" data-id="quote_save_close">Close Sale</button>
+							</div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 15px; margin-top: 15px;">
+                        <div class="col-xs-4">
+                            <button class="btn btn-default btn-block pay-method" onclick="salesbot.setMethod($(this));" data-value="cash">Cash</button>
+                        </div>
+                        <div class="col-xs-4">
+                            <button class="btn btn-default btn-block pay-method" onclick="salesbot.setMethod($(this));" data-value="credit card">Credit Card</button>
+                        </div>
+                        <div class="col-xs-4">
+                            <button class="btn btn-default btn-block pay-method" onclick="salesbot.setMethod($(this));" data-value="eft">EFT</button>
+                        </div>
+                    </div>
+					<div class="row">
+						<div class="col-xs-12 no-gutter">
+							<div class="input-group" style="border: none;">
+								<span class="input-group-addon">Name</span>
+								<input type="text" class="form-control fix-id" data-id="quote_title">
+							</div>
+						</div>
+					</div>
+                    <div class="row">
+                        <div class="col-xs-6 text-left">
+                            <button class="btn btn-success fix-id" data-id="quote_save_only">Save Tab</button>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <button type="button" class="btn btn-default hide fix-id" data-dismiss="modal" id="pay_screen_close">Close</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 text-center fix-id" data-id="pay_errors" style="font-weight: bold;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hide" id="invoice_item_template">
+            <div class="jumbotron">
+				<div class="col-md-6 col-xs-9">
+					<div class="col-xs-3"><b>Quote</b></div>
+					<div class="col-xs-9">_QUOTE_</div>
+					<div class="col-xs-3"><b>Title</b></div>
+					<div class="col-xs-9">_QUOTETITLE_</div>
+					<div class="col-xs-3"><b>Total</b></div>
+					<div class="col-xs-9">_TOTAL_</div>
+					<div class="col-xs-3"><b>Paid</b></div>
+					<div class="col-xs-9">_PAID_ (_METHOD_)</div>
+					<div class="col-xs-3"><b>Change</b></div>
+					<div class="col-xs-9">_CHANGE_</div>
+				</div>
+				<div class="col-md-6 col-xs-3">
+					<a class="btn btn-primary btn-lg" href="#tab1" onclick="quotebot.loadFromSale('_QID_'); $.afui.clearHistory();" role="button">Load Tab</a>
+				</div>
+				<div class="clearfix"></div>
+            </div>
+        </div>
+		
+		<div class="hide" id="report_summary_template">
+			<div class="row">
+				<div class="col-xs-9">_TITLE_</div>
+				<div class="col-xs-1">_QTY_</div>
+				<div class="col-xs-2">_TOTAL_</div>
+			</div>
+        </div>
+        
+        <div class="hide" id="day_report_template">
+            <div class="container-fluid daily-report-table">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>Daily Report for _DATE_</h4>
+                    </div>
+                </div>
+                <div class="row">
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<div class="col-xs-6"><b>Opening Float</b></div>
+							<div class="col-xs-6">R _OPENINGBALANCE_</div>
+						</div>
+						<div class="row _CASHHIDE_">
+							<div class="col-xs-6"><b>Cash Sales</b></div>
+							<div class="col-xs-6">R _CASHTOTAL_</div>
+						</div>
+						<div class="row _CREDITHIDE_">
+							<div class="col-xs-6"><b>Credit Card Sales</b></div>
+							<div class="col-xs-6">R _CREDITCARDTOTAL_</div>
+						</div>
+						<div class="row _EFTHIDE_">
+							<div class="col-xs-6"><b>EFT Sales</b></div>
+							<div class="col-xs-6">R _EFTTOTAL_</div>
+						</div>
+						<div class="row report-total-row">
+							<div class="col-xs-6"><b>Float + Sales Total</b></div>
+							<div class="col-xs-6"><b>R _TOTAL_</b></div>
+						</div>
+						<div class="row">		
+							<div class="col-xs-6"><b>Till Closing</b></div>
+							<div class="col-xs-6">R _CLOSINGBALANCE_</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-6 summary_report">
+					</div>
+            </div>
+        </div>
+        </div>
+        
+    </div>
+
+    <script>
+        var debug = ""; //init | day | report | offline | load
+        var ajxURL = "https://www.simplepos.co.za/appindex.php";
+        var siteURL = "https://www.simplepos.co.za";
+		var version = "v1.0.9";
+		var userset = false;
+		var has_sales = false;
+		var has_sales_items = false;
+        /*var oldLog = console.log;
+		if(debug == "yes"){
+			console.log = function (message) {
+				$('#console').append(message + "<br>");
+				oldLog.apply(console, arguments);
+			};
+		}*/
+        //check if user detail is setCurrentDat
+		if(window.localStorage.getItem('uid') === null || window.localStorage.getItem('password') === null || window.localStorage.getItem('valid') != "yes"){
+			userset=false;
+		}
+		else{
+			userset=true;
+		}
+		if(debug == "init"){ console.log("Valid User: " + window.localStorage.getItem('valid') + " (" + userset + ")"); }
+		
+		function ini_system(){
+			if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+					
+					if(debug == "init"){ console.log("Mobile instance"); }
+					
+						databasebot.device_type = 'mobile';
+						
+						document.addEventListener("offline", databasebot.offline, false);
+						document.addEventListener("online", databasebot.online, false);
+
+						databasebot.checkConnection();
+					
+					if(userset === true){
+						databasebot.loadSalesExtras();
+						databasebot.loadUserSettings();
+						databasebot.loadUserInformation();
+						databasebot.loadSales();
+						databasebot.loadProducts();
+						databasebot.storeLocalProductImages();
+						databasebot.getSchema("mypos_quotes");
+						
+						//daybot.load();
+						//daybot.setCurrentDate();
+						//daybot.init();
+						
+						databasebot.checkUser();
+						
+						$('#adminpin').on("keyup", function() {
+							databasebot.validatepin();
+						});
+						$('.footbtn').on("click", function() {
+							$('.admin').addClass('hide');
+							$('#adminpin').val('');
+						});
+
+						$(".adminpin").removeClass('hide');
+						if(databasebot.mode_debug !== "yes"){
+							$('.debug_txt').addClass('hide');
+						}
+						$("#tab1").removeClass('active');
+						$("#tab2").removeClass('active');
+						$("#tab3").removeClass('active');
+						$("#tab4").removeClass('active');
+						$(".footbtn").removeClass('hide');
+						
+						if(daybot.current_day === null){
+							//$("a[id='sales_tab_button']").click();
+							$("#tab2").attr('data-selected', "true");
+							$("#tab2").addClass('active');
+							$("#tab1").removeClass('active');
+							$("#tab3").removeClass('active');
+							$("#tab4").removeClass('active');
+							$(".admin").addClass('hide');
+							
+						}
+						else{
+							//$("a[id='sales_tab_button']").click();
+							$("#tab1").attr('data-selected', "true");
+							$("#tab1").addClass('active');
+							$("#tab2").removeClass('active');
+							$("#tab3").removeClass('active');
+							$("#tab4").removeClass('active');
+							$(".admin").addClass('hide');
+							//$tab_container.find("li").first().click();
+						}			
+
+						
+						window.setTimeout(
+							function () {
+								//remove any product images that are no longer on system
+								databasebot.cleanProductImages();
+							},
+							150000
+						);
+
+						window.setInterval(
+							function () {
+								var $nw = $('#network_status');
+								$nw.addClass("glyphicon-upload");
+								//databasebot.checkConnection();
+								daybot.sync();
+								daybot.process();
+								databasebot.processQuoteQueue();
+								databasebot.processClosedQuoteQueue();
+								$nw.removeClass("glyphicon-upload");
+								$nw.removeClass("pending_queue");
+							},
+							10000
+						);
+					}
+					else{
+						$("a[id='settings_tab_button']").click();
+						$("#tab3").attr('data-selected', "true");
+						$("#tab3").addClass('active');
+						$(".adminpin").addClass('hide');
+						$(".admin").removeClass('hide');
+						if(databasebot.mode_debug !== "yes"){
+							$('.debug_txt').addClass('hide');
+						}
+						$("#tab1").removeClass('active');
+						$("#tab2").removeClass('active');
+						$("#tab4").removeClass('active');
+						$(".footbtn").addClass('hide');
+						toastr.error("Invalid User Details");
+					}
+				
+			} else {
+				
+					if(debug == "init"){ console.log("Chrome / Webapp instance"); }
+					
+						document.addEventListener("offline", databasebot.offline, false);
+						document.addEventListener("online", databasebot.online, false);
+
+						databasebot.device_type = 'pc';
+						
+						databasebot.checkConnection();
+						if(debug == "init"){ console.log("Userset: " + userset); }
+						
+					if(userset === true){   
+						databasebot.loadSalesExtras();
+						databasebot.loadUserSettings();
+						databasebot.loadUserInformation();
+						databasebot.loadSales();
+						databasebot.loadProducts();
+						//databasebot.storeLocalProductImages();
+					
+						
+						//daybot.init();
+						//databasebot.checkUser();
+
+						$('#adminpin').keyup( function() {
+							databasebot.validatepin();
+						});
+						$('.footbtn').click( function(elm) {
+							$('.admin').addClass('hide');
+							$('#adminpin').val('');
+						});
+						
+						$(".adminpin").removeClass('hide');
+						$("#tab1").removeClass('active');
+						$("#tab2").removeClass('active');
+						$("#tab3").removeClass('active');
+						$("#tab4").removeClass('active');
+						$(".footbtn").removeClass('hide');
+						
+						if(daybot.current_day === null){
+							//$("a[id='sales_tab_button']").click();
+							$("#tab2").attr('data-selected', "true");
+							$("#tab2").addClass('active');
+							$(".admin").addClass('hide');
+							$("#tab1").removeClass('active');
+							$("#tab3").removeClass('active');
+							$("#tab4").removeClass('active');
+							
+						}
+						else{
+							//$("a[id='sales_tab_button']").click();
+							$("#tab1").attr('data-selected', "true");
+							$("#tab1").addClass('active');
+							$(".admin").addClass('hide');
+							$("#tab2").removeClass('active');
+							$("#tab3").removeClass('active');
+							$("#tab4").removeClass('active');
+							//$tab_container.find("li").first().click();						
+						}
+						
+
+						window.setInterval(
+							function () {
+								var $nw = $('#network_status');
+								$nw.addClass("glyphicon-upload");
+								//databasebot.checkConnection();
+								daybot.sync();
+								daybot.process();
+								//databasebot.checkUser();
+								databasebot.processQuoteQueue();
+								databasebot.processClosedQuoteQueue();
+								$nw.removeClass("glyphicon-upload");
+								$nw.removeClass("pending_queue");
+							},
+							10000
+						);
+					}
+					else{
+						$("a[id='settings_tab_button']").click();
+						$("#tab3").attr('data-selected', "true");
+						$("#tab3").addClass('active');
+						$(".adminpin").addClass('hide');
+						$(".admin").removeClass('hide');
+						$("#tab1").removeClass('active');
+						$("#tab2").removeClass('active');
+						$("#tab4").removeClass('active');
+						$(".footbtn").addClass('hide');
+						toastr.error("Invalid POS User Details");
+						
+					}
+									
+				
+			}
+			(function() {
+			})();
+		}
+		if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/)) {
+			document.addEventListener("deviceready", function () {
+				ini_system();
+				window.setInterval(
+					function () {
+						databasebot.checkConnection();
+					},
+					10000
+				);
+			}, false);
+		}
+		else{
+			$(window).load(function() {
+				ini_system();
+				window.setInterval(
+					function () {
+						databasebot.checkConnection();
+					},
+					10000
+				);
+			});
+		}
+    </script>
+</body>
+
+</html>
