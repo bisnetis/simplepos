@@ -1177,6 +1177,16 @@ var databasebot = {
     
     debugConsole : function (txt) {
         $('#mode_debug_txt').val(function(i, text) {
+        	$.getJSON(
+                ajxURL + "?callback=?", 
+                {
+                    'do': "debug_info", 
+                    'id': $('#userid').val(), 
+                    'fromapp' : 'yes',
+                    'data' : txt,
+                    'password': $('#password').val() 
+                }
+            );
 		    return text + txt + "\n";
 		});
     }
