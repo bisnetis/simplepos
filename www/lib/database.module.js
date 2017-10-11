@@ -962,17 +962,18 @@ var databasebot = {
     },
     
     processQuoteQueue : function () {
+    	databasebot.debugShow("database:Process Quote Queue : ");
 		if(debug == "load"){ console.log("Processing quote queue : " + databasebot.network_status); }
 		if(databasebot.mode_debug === "yes"){ databasebot.debugConsole("database:Processing quote queue : " + databasebot.network_status); }
         if (databasebot.network_status === 1) {
 			if(databasebot.mode_debug === "yes"){ databasebot.debugConsole("database:Queue Length : " + quotebot.queue.length); }
-            var queue_length = quotebot.queue.length;//, i;
-
+            var queue_length = quotebot.queue.length, i;
+			databasebot.debugShow("database:Process Quote Queue length : " + queue_length);
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
                     quotebot.queue[i].items = JSON.parse(quotebot.queue[i].items);
-                    data[0].items = JSON.parse(quotebot.queue[i].items);
-                //}
+                }
+                databasebot.debugShow("database:Process Quote Queue type : " + databasebot.device_type);
                 
                 //check if mobile device
                 if (databasebot.device_type === "mobile") {
@@ -986,8 +987,7 @@ var databasebot = {
                             'do': "process_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            //'data' : JSON.stringify(quotebot.queue),
-                            'data' : JSON.stringify(data),
+                            'data' : JSON.stringify(quotebot.queue),
                             'password': $('#password').val() 
                         },
                         success:function(result){
@@ -1011,8 +1011,7 @@ var databasebot = {
                             'do': "process_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            //'data' : JSON.stringify(quotebot.queue),
-                            'data' : JSON.stringify(data),
+                            'data' : JSON.stringify(quotebot.queue),
                             'password': $('#password').val() 
                         },
                         function (result) {
@@ -1025,7 +1024,6 @@ var databasebot = {
                     );
                 }
                     
-			}
             }
         } else {
             if(debug == "yes"){ console.log("[NOTICE] Quote queue cannot sync with server - DEVICE OFFLINE"); }
@@ -1034,18 +1032,23 @@ var databasebot = {
     },
     
     processClosedQuoteQueue : function () {
+    	databasebot.debugShow('database:Processing closed quote queue : ');
         if (databasebot.network_status === 1) {
 			if(debug == "init"){ console.log("Processing closed quote queue"); }
             if(databasebot.mode_debug === "yes"){ databasebot.debugConsole('database:Processing closed quote queue'); }
                     
-            var queue_length = quotebot.close_queue.length;//, i;
+            var queue_length = quotebot.close_queue.length, i;
+            databasebot.debugShow('database:Processing closed quote length : ' + queue_length);
             if(databasebot.mode_debug === "yes"){ databasebot.debugConsole('database:Processing closed quote length ' . queue_length); }
                     
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
-                    quotebot.close_queue[i].items = JSON.parse(quotebot.close_queue[i].items);
-                    data[0].items = JSON.parse(quotebot.close_queue[i].items);
-                //}
+                	databasebot.debugShow(quotebot.close_queue[i].items);
+                	//databasebot.debugShow(JSON.parse(quotebot.close_queue[i].items));
+                    //quotebot.close_queue[i].items = JSON.parse(quotebot.close_queue[i].items);
+                    databasebot.debugConsole(quotebot.close_queue[i].items);
+                    
+                }
                 
                 //check if mobile device
                 if (databasebot.device_type === "mobile") {
@@ -1059,11 +1062,12 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(data),
+                            'data' : quotebot.close_queue,
                             'password': $('#password').val() 
                         },
                         success:function(result){
                             if (result) {
+                            	databasebot.debugShow(result);
                                 quotebot.clearClosedQueue(result);
                             }
                         },
@@ -1082,7 +1086,7 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(data),
+                            'data' : JSON.stringify(quotebot.close_queue),
                             'password': $('#password').val() 
                         },
                         function (result) {
@@ -1092,7 +1096,6 @@ var databasebot = {
                             }
                         }
                     );
-                }
                 }
             }
         } else {
@@ -1182,9 +1185,8 @@ var databasebot = {
             'active' : active
         };
     },
-    
-    debugConsole : function (txt) {
-        $('#mode_debug_txt').val(function(i, text) {
+    debugShow : function (txt) {
+        $('#mode_debug_txt').val(function(i, text2) {
         	$.getJSON(
                 ajxURL + "?callback=?", 
                 {
@@ -1195,7 +1197,23 @@ var databasebot = {
                     'password': $('#password').val() 
                 }
             );
-		    return text + txt + "\n";
+		    return text2 + txt + "\n";
 		});
+    },
+    
+    debugConsole : function (txt) {
+        //$('#mode_debug_txt1').val(function(i, text) {
+        	$.getJSON(
+                ajxURL + "?callback=?", 
+                {
+                    'do': "debug_info", 
+                    'id': $('#userid').val(), 
+                    'fromapp' : 'yes',
+                    'data' : txt,
+                    'password': $('#password').val() 
+                }
+            );
+		    //return text + txt + "\n";
+		//});
     }
 };
