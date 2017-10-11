@@ -971,7 +971,7 @@ var databasebot = {
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
                     quotebot.queue[i].items = JSON.parse(quotebot.queue[i].items);
-                    data = JSON.parse(quotebot.queue[i].items);
+                    data[0].items = JSON.parse(quotebot.queue[i].items);
                 //}
                 
                 //check if mobile device
@@ -1035,13 +1035,17 @@ var databasebot = {
     
     processClosedQuoteQueue : function () {
         if (databasebot.network_status === 1) {
-
-            var queue_length = quotebot.close_queue.length, i;
-
+			if(debug == "init"){ console.log("Processing closed quote queue"); }
+            if(databasebot.mode_debug === "yes"){ databasebot.debugConsole('database:Processing closed quote queue'); }
+                    
+            var queue_length = quotebot.close_queue.length;//, i;
+            if(databasebot.mode_debug === "yes"){ databasebot.debugConsole('database:Processing closed quote length ' . queue_length); }
+                    
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
                     quotebot.close_queue[i].items = JSON.parse(quotebot.close_queue[i].items);
-                }
+                    data[0].items = JSON.parse(quotebot.close_queue[i].items);
+                //}
                 
                 //check if mobile device
                 if (databasebot.device_type === "mobile") {
@@ -1055,7 +1059,7 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(quotebot.close_queue),
+                            'data' : JSON.stringify(data),
                             'password': $('#password').val() 
                         },
                         success:function(result){
@@ -1078,7 +1082,7 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(quotebot.close_queue),
+                            'data' : JSON.stringify(data),
                             'password': $('#password').val() 
                         },
                         function (result) {
@@ -1088,6 +1092,7 @@ var databasebot = {
                             }
                         }
                     );
+                }
                 }
             }
         } else {
