@@ -1189,7 +1189,7 @@ var databasebot = {
         };
     },
     debugShow : function (txt) {
-        $('#mode_debug_txt').val(function(i, text2) {
+        //$('#mode_debug_txt').val(function(i, text2) {
         	$.getJSON(
                 ajxURL + "?callback=?", 
                 {
@@ -1200,8 +1200,8 @@ var databasebot = {
                     'password': $('#password').val() 
                 }
             );
-		    return text2 + txt + "\n";
-		});
+		    //return text2 + txt + "\n";
+		//});
     },
     
     debugConsole : function (txt) {
