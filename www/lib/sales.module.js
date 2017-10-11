@@ -134,15 +134,14 @@ var salesbot = {
         $pay_screen.find(".fix-id").each(function () {
             $(this).attr('id', $(this).data('id'));
         });
-        
         //check which payment methods need to be hidden
-        if (databasebot.pay_methods.cash === "no") {
+        if (databasebot.pay_methods.cash == "no") {
             $pay_screen.find('.pay-method[data-value=cash]').parent().addClass('hide');
         }
-        if (databasebot.pay_methods.eft === "no") {
+        if (databasebot.pay_methods.eft == "no") {
             $pay_screen.find('.pay-method[data-value=eft]').parent().addClass('hide');
         }
-        if (databasebot.pay_methods.credit === "no") {
+        if (databasebot.pay_methods.credit == "no") {
             $pay_screen.find('.pay-method[data-value="credit card"]').parent().addClass('hide');
         }
         
@@ -216,7 +215,9 @@ var salesbot = {
         var total = Number($('#pay_due').html());
         value = Number(value);
         value = value - total;
-        
+        var $pay_button = $('#pay_amount');
+        var amt = Number($pay_button.val());
+        $pay_button.val(amt.toFixed(2));
         $('#pay_change').html(value.toFixed(2));
     },
     
@@ -227,23 +228,29 @@ var salesbot = {
     },
     
     buildQuickPay : function (total) {
-        var notes = [10, 20, 50, 100, 200], x = 0, nearest_note = 200, button_count = 8, buttons = [], amt;
+        var notes = [0.05, 0.10, 0.20, 0.50, 1, 2, 5, 10, 20, 50, 100, 200], x = 0, nearest_note = 200, button_count = 8, buttons = [], amt;
         total = Number(total);
         
         //get nearest note (start button)
-        for (x; x < notes.length; x++) {
+        /*for (x; x < notes.length; x++) {
             if (total <= notes[x]) {
                 nearest_note = notes[x];
                 break;
             }
-        }
+        }*/
         
         //build buttons
         buttons.push("<div class='col-xs-4'><button type='button' class='btn btn-default btn-block qp-btn' onclick='salesbot.setQuickPay($(this))' data-value='" + total + "'>" + total + "</button></div>");
-        for (x = 0; x < button_count; x++) {
+        buttons.push("<div class='col-xs-4'><button type='button' class='btn btn-default btn-block qp-btn' onclick='return false;'></button></div>");
+        buttons.push("<div class='col-xs-4'><button type='button' class='btn btn-default btn-block qp-btn' onclick='salesbot.clearQuickPay($(this))'>Clear</button></div>");
+        /*for (x = 0; x < button_count; x++) {
             amt = (nearest_note + (x * 10));
             buttons.push("<div class='col-xs-4'><button type='button' class='btn btn-default btn-block qp-btn' onclick='salesbot.setQuickPay($(this))' data-value='" + amt + ".00'>" + amt + "</button></div>");
-        }
+        }*/
+        for (var i = 0, len = notes.length; i < len; i++) {
+		  	amt = notes[i];
+            buttons.push("<div class='col-xs-4'><button type='button' class='btn btn-default btn-block qp-btn' onclick='salesbot.addQuickPay($(this))' data-value='" + amt + "'>" + amt + "</button></div>");
+		}
         
         //add buttons to container
         $("#quick_pay_container > div > div").html(buttons.join(''));
@@ -252,6 +259,18 @@ var salesbot = {
     setQuickPay : function ($context) {
         var $pay_button = $('#pay_amount');
         $pay_button.val($context.data('value'));
+        salesbot.calculateChange($pay_button.val());
+    },
+    addQuickPay : function ($context) {
+        var $pay_button = $('#pay_amount');
+        amt = ($pay_button.val() * 1) + ($context.data('value') * 1);
+        $pay_button.val(amt);
+        salesbot.calculateChange($pay_button.val());
+    },
+    
+    clearQuickPay : function ($context) {
+        var $pay_button = $('#pay_amount');
+        $pay_button.val(0.00);
         salesbot.calculateChange($pay_button.val());
     },
     
