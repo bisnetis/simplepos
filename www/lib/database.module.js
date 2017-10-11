@@ -971,7 +971,8 @@ var databasebot = {
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
                     quotebot.queue[i].items = JSON.parse(quotebot.queue[i].items);
-                }
+                    data = JSON.parse(quotebot.queue[i].items);
+                //}
                 
                 //check if mobile device
                 if (databasebot.device_type === "mobile") {
@@ -985,7 +986,8 @@ var databasebot = {
                             'do': "process_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(quotebot.queue),
+                            //'data' : JSON.stringify(quotebot.queue),
+                            'data' : JSON.stringify(data),
                             'password': $('#password').val() 
                         },
                         success:function(result){
@@ -1009,7 +1011,8 @@ var databasebot = {
                             'do': "process_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(quotebot.queue),
+                            //'data' : JSON.stringify(quotebot.queue),
+                            'data' : JSON.stringify(data),
                             'password': $('#password').val() 
                         },
                         function (result) {
@@ -1022,7 +1025,7 @@ var databasebot = {
                     );
                 }
                     
-
+			}
             }
         } else {
             if(debug == "yes"){ console.log("[NOTICE] Quote queue cannot sync with server - DEVICE OFFLINE"); }
