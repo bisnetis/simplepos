@@ -965,8 +965,8 @@ var databasebot = {
 		if(debug == "load"){ console.log("Processing quote queue : " + databasebot.network_status); }
 		if(databasebot.mode_debug === "yes"){ databasebot.debugConsole("database:Processing quote queue : " + databasebot.network_status); }
         if (databasebot.network_status === 1) {
-
-            var queue_length = quotebot.queue.length, i;
+			if(databasebot.mode_debug === "yes"){ databasebot.debugConsole("database:Queue Length : " + quotebot.queue.length); }
+            var queue_length = quotebot.queue.length;//, i;
 
             if (queue_length > 0) {
                 for (i = 0; i < queue_length; i++) {
