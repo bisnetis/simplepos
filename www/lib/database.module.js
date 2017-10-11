@@ -1047,8 +1047,10 @@ var databasebot = {
                 	//databasebot.debugShow(JSON.parse(quotebot.close_queue[i].items));
                     //quotebot.close_queue[i].items = JSON.parse(quotebot.close_queue[i].items);
                     databasebot.debugConsole(quotebot.close_queue[i].items);
-                    
-                }
+                    var tmp_close_queue = [];
+                    tmp_close_queue.push(quotebot.close_queue[i]);
+                    databasebot.debugShow(JSON.stringify(tmp_close_queue));
+                //}
                 
                 //check if mobile device
                 if (databasebot.device_type === "mobile") {
@@ -1062,7 +1064,7 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : quotebot.close_queue,
+                            'data' : JSON.stringify(tmp_close_queue),
                             'password': $('#password').val() 
                         },
                         success:function(result){
@@ -1086,7 +1088,7 @@ var databasebot = {
                             'do': "process_close_sales", 
                             'id': $('#userid').val(), 
                             'fromapp' : 'yes',
-                            'data' : JSON.stringify(quotebot.close_queue),
+                            'data' : JSON.stringify(tmp_close_queue),
                             'password': $('#password').val() 
                         },
                         function (result) {
@@ -1096,6 +1098,7 @@ var databasebot = {
                             }
                         }
                     );
+                }
                 }
             }
         } else {
