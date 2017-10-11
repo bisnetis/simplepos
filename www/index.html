@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="lib/appframework/af.ui.css" />
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="bower_components/toastr/toastr.css" />
-    <link rel="stylesheet" type="text/css" href="lib/general.css" />
+    <link rel="stylesheet" type="text/css" href="lib/general.css?v=1.1.6" />
         
     <script type="text/javascript" charset="utf-8" src="lib/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="bower_components/taffydb/taffy-min.js"></script>
@@ -25,14 +25,14 @@
     <script src='cordova.js'></script>
     <script type="text/javascript" charset="utf-8" src="bower_components/toastr/toastr.min.js"></script>
     <!--<script src='bower_components/phonegap_file_downloader/file-downloader.js'></script>-->
-    <script src='lib/database.module.js'></script>
-    <script src='lib/sales.module.js'></script>
-    <script src='lib/product.module.js'></script>
-    <script src='lib/file.module.js'></script>
-    <script src='lib/quote.module.js'></script>
-    <script src='lib/day.module.js'></script>
-    <script src='lib/report.module.js'></script>
-    <script src='lib/general.module.js'></script>
+    <script src='lib/database.module.js?v=1.1.6'></script>
+    <script src='lib/sales.module.js?v=1.1.6'></script>
+    <script src='lib/product.module.js?v=1.1.6'></script>
+    <script src='lib/file.module.js?v=1.1.6'></script>
+    <script src='lib/quote.module.js?v=1.1.6'></script>
+    <script src='lib/day.module.js?v=1.1.6'></script>
+    <script src='lib/report.module.js?v=1.1.6'></script>
+    <script src='lib/general.module.js?v=1.1.6'></script>
     
 
 </head>
@@ -103,6 +103,7 @@
             </div>
 
             <div class="panel" data-title="Settings" id="tab3">
+            	<textarea class="form-control" style="width: 100%; height: 200px;" id="mode_debug_txt"></textarea>
                 <div class="form-group adminpin" style="margin-top: 15px;">
                     <label>Admin PIN:</label>
                     <div class="input-group">
@@ -154,11 +155,6 @@
 					<label class="checkbox-inline" style="width:auto">
 						<input type="checkbox" value="debug" id="mode_debug">
 					</label>
-				</div>
-				<div class="clearfix"></div>
-				<div class="form-group admin adminpin hide debug_txt">
-					<label>Debug Console:</label>
-					<textarea class="form-control" style="width: 100%; height: 100px;" id="mode_debug_txt"></textarea>
 				</div>
 				<div class="clearfix"></div>
                 <div class="text-center admin" style="margin-top: 15px;">
@@ -399,10 +395,11 @@
         var debug = ""; //init | day | report | offline | load
         var ajxURL = "https://www.simplepos.co.za/appindex.php";
         var siteURL = "https://www.simplepos.co.za";
-		var version = "v1.1.4";
+		var version = "v1.1.6";
 		var userset = false;
 		var has_sales = false;
 		var has_sales_items = false;
+		$('#mode_debug_txt').val('');
         /*var oldLog = console.log;
 		if(debug == "yes"){
 			console.log = function (message) {
@@ -455,9 +452,9 @@
 						});
 
 						$(".adminpin").removeClass('hide');
-						if(databasebot.mode_debug !== "yes"){
-							$('.debug_txt').addClass('hide');
-						}
+						//if(databasebot.mode_debug !== "yes"){
+						//	$('.debug_txt').addClass('hide');
+						//}
 						$("#tab1").removeClass('active');
 						$("#tab2").removeClass('active');
 						$("#tab3").removeClass('active');
@@ -515,9 +512,9 @@
 						$("#tab3").addClass('active');
 						$(".adminpin").addClass('hide');
 						$(".admin").removeClass('hide');
-						if(databasebot.mode_debug !== "yes"){
-							$('.debug_txt').addClass('hide');
-						}
+						//if(databasebot.mode_debug !== "yes"){
+						//	$('.debug_txt').addClass('hide');
+						//}
 						$("#tab1").removeClass('active');
 						$("#tab2").removeClass('active');
 						$("#tab4").removeClass('active');
